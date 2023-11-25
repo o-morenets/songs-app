@@ -5,6 +5,7 @@ import com.example.resourceservice.exception.Mp3ValidationException;
 import com.example.resourceservice.exception.ResourceNotFoundException;
 import com.example.resourceservice.service.ResourceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/resources")
 @RequiredArgsConstructor
+@Slf4j
 public class ResourceController {
 
 	private final ResourceService resourceService;
@@ -25,8 +27,10 @@ public class ResourceController {
 			Resource resource = resourceService.save(file);
 			return ResponseEntity.status(HttpStatus.OK).body(String.format("{\"id\":%d}", resource.getId()));
 		} catch (Mp3ValidationException e) {
+			log.error(e.getMessage());
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
+			log.error(e.getMessage());
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -37,8 +41,10 @@ public class ResourceController {
 			Resource resource = resourceService.findById(id);
 			return new ResponseEntity<>(resource, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
+			log.error(e.getMessage());
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			log.error(e.getMessage());
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
