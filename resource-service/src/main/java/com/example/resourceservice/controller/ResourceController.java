@@ -6,6 +6,7 @@ import com.example.resourceservice.exception.ResourceNotFoundException;
 import com.example.resourceservice.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +37,13 @@ public class ResourceController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Resource> findById(@PathVariable Long id) {
+	public ResponseEntity<byte[]> findById(@PathVariable Long id) {
 		try {
 			Resource resource = resourceService.findById(id);
-			return new ResponseEntity<>(resource, HttpStatus.OK);
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.headers(httpHeaders -> httpHeaders.add(HttpHeaders.CONTENT_TYPE, "audio/mpeg"))
+					.body(resource.getData());
 		} catch (ResourceNotFoundException e) {
 			log.error(e.getMessage());
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
